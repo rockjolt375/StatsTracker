@@ -1,0 +1,47 @@
+# Statistics Tracker Configuration
+version: 1.0 # Do not touch this
+#################################################
+# MySQL Configuration
+# Enabled: false for flatfile storage
+
+MySQL:
+    Enabled: false
+    username: username
+    password: password
+    host: host
+    port: port
+    database: database
+    
+# Statistics Tracking
+# Set false to disable tracking
+
+Stats:
+    minutesPlayed: true
+    damageDealt: true
+    damageTaken: true
+    playerKills: true
+    playerDeaths: true
+    mobKills: true
+        creeper: true
+        skeleton: true
+        zombie: true
+        slime: true
+        ghast: true
+        enderman: true
+        spider: true
+        caveSpider: true
+        silverfish: true
+        enderDragon: true
+        blaze: true
+        magmaCube: true
+        bat: true
+        witch: true
+        pig: true
+        cow: true
+        sheep: true
+        chicken: true
+        squid: true
+        horse: true
+    animalsBred: true
+    blocksPlaced: true
+    blocksDestroyed: true

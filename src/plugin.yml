@@ -1,0 +1,19 @@
+main: com.mythicacraft.statstracker.StatsTracker
+name: StatsTracker
+version: 0.1
+author: rockjolt375
+description: Allows use of teleportation in the form of currency
+commands:
+    mystats:
+        usage: /mystats
+    stats:
+        usage: /stats toplist
+permissions: 
+    statstracker.track:
+        description: Allows tracking of statistics
+        default: true
+    statstracker.top:
+        description: Allows viewing of top list
+    statstracker.admin:
+        description: Allows viewing of other players statistics
+        default: op
