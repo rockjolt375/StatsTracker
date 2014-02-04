@@ -9,16 +9,46 @@ public class Statistics{
 	private int value = 1;
 	private String world;
 	private Stats statEnum;
-	//private MobType mobsEnum;
 	private String mobName;
-	public enum Stats{MINUTES_PLAYED, DAMAGE_DEALT, DAMAGE_TAKEN, MOB_KILLS, ANIMALS_BRED,
-		PLAYER_DEATHS, PLAYER_KILLS, BLOCKS_PLACED, BLOCKS_DESTROYED}
-	/*
-	public enum MobType{CREEPER, SKELETON, ZOMBIE, SLIME, GHAST, ENDERMAN, SPIDER, CAVE_SPIDER,
-		SILVERFISH, ENDERDRAGON, BLAZE, MAGMA_CUBE, BAT, WITCH, PIG, COW, SHEEP, CHICKEN,
-		SQUID, HORSE, IRON_GOLUM, MUSHROOM_COW, OCELOT, PIG_ZOMBIE, SNOWMAN, VILLAGER, WITHER,
-		WOLF}
-		*/
+	public enum Stats{MINUTES_PLAYED, DAMAGE_DEALT, DAMAGE_TAKEN, MOB_KILLS,
+		PLAYER_DEATHS, PLAYER_KILLS, BLOCKS_PLACED, BLOCKS_DESTROYED, BLOCKS_TRAVELED;
+		
+		public String toString(){
+			String name = null;
+			switch(this){
+			case BLOCKS_DESTROYED:
+				name = "BLOCKS_DESTROYED";
+				break;
+			case BLOCKS_PLACED:
+				name = "BLOCKS_PLACED";
+				break;
+			case DAMAGE_DEALT:
+				name = "DAMAGE_DEALT";
+				break;
+			case DAMAGE_TAKEN:
+				name = "DAMAGE_TAKEN";
+				break;
+			case MINUTES_PLAYED:
+				name = "MINUTES_PLAYED";
+				break;
+			case MOB_KILLS:
+				name = "MOB_KILLS";
+				break;
+			case PLAYER_DEATHS:
+				name = "PLAYER_DEATHS";
+				break;
+			case PLAYER_KILLS:
+				name = "PLAYER_KILLS";
+				break;
+			case BLOCKS_TRAVELED:
+				name = "BLOCKS_TRAVELED";
+				break;
+			default:
+				break;
+			}
+			return name;
+		}
+	}
 	
 	public Statistics(Player player, Stats stats, String world){
 		this.player = player;
@@ -67,7 +97,7 @@ public class Statistics{
 		return world;
 	}
 	
-	public Stats getStats(){
+	public Stats getType(){
 		return statEnum;
 	}
 	

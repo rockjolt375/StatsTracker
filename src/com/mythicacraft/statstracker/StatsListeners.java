@@ -1,5 +1,6 @@
 package com.mythicacraft.statstracker;
 
+import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -7,10 +8,10 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import com.mythicacraft.statstracker.Statistics.Stats;
@@ -73,15 +74,17 @@ public class StatsListeners implements Listener{
 		}
     }
 	
-	@EventHandler(priority = EventPriority.MONITOR)
-    public void onAnimalBred(final CreatureSpawnEvent event){
-            //if SpawnReason.BREEDING
-    }
-	
 	@EventHandler(priority = EventPriority.HIGH)
     public void onPlayerDisconnect(final PlayerQuitEvent event){
             //get online-time from /playerinfo in mythsentials
     }
+	
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void onPlayerTravel(final PlayerMoveEvent event){
+		plugin.addToLiveQueue(new Statistics(event.getPlayer(), Stats.BLOCKS_TRAVELED,
+				getDistance(event.getTo(), event.getFrom()),
+				event.getPlayer().getWorld().toString()));
+	}
 	
 	private boolean isTracked(EntityType type){
 		for(int i=0; i<trackedMobs.length;i++){
@@ -90,5 +93,10 @@ public class StatsListeners implements Listener{
 			}
 		}
 		return false;
+	}
+	
+	private int getDistance(Location to, Location from){
+		  double distance = from.toVector().distance(to.toVector());
+		  return (int) Math.round(distance);
 	}
 }

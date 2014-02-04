@@ -17,7 +17,7 @@ public class DatabaseUtility {
 	
 	private final Logger logger = Logger.getLogger("Minecraft");
 	
-	private String connUsername, connPassword, connHost, connPort, connDatabase, tableName;
+	private String connUsername, connPassword, connHost, connPort, connDatabase;
 	private Connection conn;
 	private ResultSet result;
 	private PreparedStatement queryStatement;
@@ -30,13 +30,12 @@ public class DatabaseUtility {
 	 * @param config		- config.yml file for database info
 	 * @param tableName		- Table where information is stored
 	 */
-	public DatabaseUtility(FileConfiguration config, String tableName){
-		connUsername = config.getString("username");
-		connPassword = config.getString("password");
-		connHost = config.getString("host");
-		connPort = config.getString("port");
-		connDatabase = config.getString("dbase");
-		this.tableName = tableName;
+	public DatabaseUtility(FileConfiguration config){
+		connUsername = config.getString("MySQL.username");
+		connPassword = config.getString("MySQL.password");
+		connHost = config.getString("MySQL.host");
+		connPort = config.getString("MySQL.port");
+		connDatabase = config.getString("MySQL.database");
 	}
 	
 	/**
@@ -52,13 +51,12 @@ public class DatabaseUtility {
 	 * @param tableName		- Table where information is stored
 	 */
 	public DatabaseUtility(String username, String password, String host, String port,
-			String databaseName, String tableName){
+			String databaseName){
 		this.connUsername = username;
 		this.connPassword = password;
 		this.connHost = host;
 		this.connPort = port;
 		this.connDatabase = databaseName;
-		this.tableName = tableName;
 	}
 	
 	/**
@@ -116,11 +114,11 @@ public class DatabaseUtility {
 	 * @param tableColumns	- Columns to be created in new table
 	 * @throws SQLException Exception required for SQL connections
 	 */
-	public void CreateTable(String tableColumns) throws SQLException { 
+	public void CreateTable(String tableName, String tableColumns) throws SQLException { 
 		connect();
 		DatabaseMetaData dbm = conn.getMetaData();
 		ResultSet tables = dbm.getTables(null, null, tableName, null);
-		this.logger.info("Checking for database table....");
+		this.logger.info("Checking for " + tableName + " table....");
 		if (!tables.next()) {
 			this.logger.info("Table not found, creating table...");
 			Statement stmt = conn.createStatement();
@@ -144,10 +142,10 @@ public class DatabaseUtility {
 	 * @return			Returns the result set containing player info
 	 * @throws SQLException
 	 */
-	public ResultSet getRows(String params) throws SQLException{
+	public ResultSet getRows(String table, String params) throws SQLException{
 		connect();
 		if(params == null) params = "1";
-		queryStatement = conn.prepareStatement("SELECT * FROM " + tableName + " WHERE " + params);
+		queryStatement = conn.prepareStatement("SELECT * FROM " + table + " WHERE " + params);
 		result = queryStatement.executeQuery();
 		return result;
 	}
@@ -163,9 +161,9 @@ public class DatabaseUtility {
 	 * @param params	Data values to be entered separated by commas
 	 * @throws SQLException
 	 */
-	public void addRows(String params) throws SQLException{
+	public void addRows(String table, String params) throws SQLException{
 		connect();
-		queryStatement = conn.prepareStatement("INSERT INTO " + tableName + "(" + getColumnNamesString() +
+		queryStatement = conn.prepareStatement("INSERT INTO " + table + "(" + getColumnNamesString(table) +
 				") VALUES (" + params + ")");
 		queryStatement.executeQuery();
 		close();
@@ -183,10 +181,10 @@ public class DatabaseUtility {
 	 * @param newValue		 - Value to be inserted into column
 	 * @throws SQLException
 	 */
-	public void updateRow(String idColumn, String idValue, String columnToChange, String newValue)
+	public void updateRow(String table, String idColumn, String idValue, String columnToChange, String newValue)
 			throws SQLException{
 		connect();
-		queryStatement = conn.prepareStatement("UPDATE " + tableName + " SET " + columnToChange + "=" +
+		queryStatement = conn.prepareStatement("UPDATE " + table + " SET " + columnToChange + "=" +
 				newValue + " WHERE " + idColumn + "=" + idValue);
 		queryStatement.executeQuery();
 		close();
@@ -202,9 +200,9 @@ public class DatabaseUtility {
 	 * @param value			- Value to identify row to remove
 	 * @throws SQLException
 	 */
-	public void removeRow(String columnName, String value) throws SQLException{
+	public void removeRow(String table, String columnName, String value) throws SQLException{
 		connect();
-		queryStatement = conn.prepareStatement("DELETE FROM " + tableName + " WHERE " + columnName + "=" +
+		queryStatement = conn.prepareStatement("DELETE FROM " + table + " WHERE " + columnName + "=" +
 				value);
 		queryStatement.executeQuery();
 		close();
@@ -216,8 +214,8 @@ public class DatabaseUtility {
 	 * @return	ArrayList of String values containing column names
 	 * @throws SQLException
 	 */
-	public ArrayList<String> getColumnNames() throws SQLException{
-		ResultSet result = getRows(null);
+	public ArrayList<String> getColumnNames(String table) throws SQLException{
+		ResultSet result = getRows(table, null);
 		ArrayList<String> columns = new ArrayList<String>();
 		ResultSetMetaData rsmd = result.getMetaData();
 		for(int i=1; i<rsmd.getColumnCount(); i++){
@@ -233,8 +231,8 @@ public class DatabaseUtility {
 	 * @return String of column names separated by commas
 	 * @throws SQLException
 	 */
-	public String getColumnNamesString() throws SQLException{
-		ArrayList<String> columns = getColumnNames();
+	public String getColumnNamesString(String table) throws SQLException{
+		ArrayList<String> columns = getColumnNames(table);
 		String columnString = "";
 		for(int i=0; i<columns.size(); i++){
 			columnString += "," + columns.get(i);

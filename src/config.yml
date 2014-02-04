@@ -11,7 +11,25 @@ MySQL:
     host: host
     port: port
     database: database
-    
+
+# Universe Tracking
+# List each universe to be tracked
+# Labeling all worlds that are tracked
+# in listed universe. If nothing is
+# listed, all worlds will be cumulative
+#
+# Example:
+# Universes:
+#     PvP:
+#         - world1
+#         - world1a
+#     Survival:
+#         - world2
+
+Universes:
+    Default:
+        - all
+
 # Statistics Tracking
 # Set false to disable tracking
 
@@ -45,3 +63,4 @@ Stats:
     animalsBred: true
     blocksPlaced: true
     blocksDestroyed: true
+    blocksTraveled: true
