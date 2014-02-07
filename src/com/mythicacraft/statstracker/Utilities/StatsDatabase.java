@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -40,8 +41,13 @@ public class StatsDatabase extends DatabaseUtility{
 		String value = stats.getValue() + "";
 		if(!exists(stats.getPlayer()))
 			insertDefaults(stats.getPlayer().toString(), table);
-		super.updateRow(table, "player", stats.getPlayer().getName(), column, value);
-		
+		super.addToRow(table, "player", "'" + stats.getPlayer().getName() + "'", column, value);	
+	}
+	
+	public void addStat(String player,  String universe, String stat, String value) throws SQLException{
+		if(!exists(Bukkit.getPlayer(player)))
+			insertDefaults(player, "stats_" + universe);
+		super.addToRow("stats_" + universe, "player", "'" + player + "'", stat, value);	
 	}
 	
 	public HashMap<String, Integer> getStatistics(Player player) throws SQLException{
@@ -73,9 +79,13 @@ public class StatsDatabase extends DatabaseUtility{
 	}
 	
 	private boolean exists(Player player) throws SQLException{
+		boolean exists = false;
 		ResultSet results = super.getRows("stats_" + getUniverse(player.getWorld().toString()),
 				"player_name = '" + player + "'");
-		return results.next();
+		if(results.next())
+			exists = true;
+		super.close();
+		return exists;
 	}
 	
 	private void insertDefaults(String player, String table) throws SQLException{

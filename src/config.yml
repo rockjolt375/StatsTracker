@@ -27,8 +27,11 @@ MySQL:
 #         - world2
 
 Universes:
-    Default:
+    default:
         - all
+        
+# Update interval in ticks for stats to be stored. Default 5 minutes
+updateInterval: 6000
 
 # Statistics Tracking
 # Set false to disable tracking

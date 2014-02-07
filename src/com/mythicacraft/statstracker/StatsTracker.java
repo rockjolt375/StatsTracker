@@ -6,16 +6,19 @@ import java.util.List;
 import java.util.Queue;
 import java.util.logging.Logger;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitScheduler;
 
 import com.mythicacraft.statstracker.Statistics.Stats;
 import com.mythicacraft.statstracker.Utilities.ConfigAccessor;
 import com.mythicacraft.statstracker.Utilities.StatsDatabase;
+import com.mythicacraft.statstracker.Utilities.StatsSyncTask;
 
 public class StatsTracker extends JavaPlugin{
 
-	private static final Logger log = Logger.getLogger("Minecraft");
+	public static final Logger log = Logger.getLogger("Minecraft");
 	
 	private Queue<Statistics> liveQueue = new LinkedList<Statistics>();
 	
@@ -43,11 +46,7 @@ public class StatsTracker extends JavaPlugin{
 		 getCommand("stats").setExecutor(new Commands());
 		 getServer().getPluginManager().registerEvents(new StatsListeners(this), this);
 		 
-		 /*
-		  * start scheduler, scheduler checks for temp data before continuing with other stuff
-		  * 
-		  * 
-		  */
+		 scheduleTask();
 
 		 log.info("[StatsTracker] Enabled!");
 	 }
@@ -98,6 +97,12 @@ public class StatsTracker extends JavaPlugin{
 		 liveQueue.add(stats);
 	 }
 	 
+	 private void scheduleTask(){
+		 BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
+		 int updateInterval = getConfig().getInt("updateInterval");
+		 scheduler.scheduleSyncRepeatingTask(this, new StatsSyncTask(this), updateInterval, updateInterval);
+	 }
+	 
 	private void addStats(ConfigAccessor config, Statistics stat){
 		String typeName = stat.getType().toString();
 		String universe = getUniverse(stat.getWorld());
@@ -119,15 +124,5 @@ public class StatsTracker extends JavaPlugin{
 				 return universeName;
 		 }
 		return null;
-	}
-	
-	private void saveTempQueue(){
-		 if(sqlEnabled){
-			 //tempStorage to database
-		 }
-		 else{
-			 //tempStorage to stats.yml
-		 }
-	}
-	 
+	}	 
 }

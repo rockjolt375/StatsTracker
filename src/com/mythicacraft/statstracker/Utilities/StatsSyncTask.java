@@ -1,9 +1,9 @@
 package com.mythicacraft.statstracker.Utilities;
 
 import java.io.File;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Queue;
-import java.util.Set;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -24,6 +24,9 @@ public class StatsSyncTask extends BukkitRunnable{
 	}
 	@Override
 	public void run() {
+		try {
+			saveTempQueue();
+		} catch (SQLException e1) {StatsTracker.log.info("[StatsTracker] Uploading tmep queue failed!");}
 		if(plugin.sqlEnabled){
 			StatsDatabase db = new StatsDatabase(plugin.getConfig());
 			try{
@@ -83,4 +86,35 @@ public class StatsSyncTask extends BukkitRunnable{
 		return null;
 	}
 
+	private void saveTempQueue(){
+		StatsDatabase db = null;
+		ConfigAccessor statsData = new ConfigAccessor("stats.yml");
+		ConfigAccessor tempData = new ConfigAccessor("tempStorage.yml");
+		File temp = new File(plugin.getDataFolder().getAbsolutePath() + File.separator + "data" +
+				File.separator + "tempStorage.yml");
+		if(plugin.sqlEnabled)
+			db = new StatsDatabase(plugin.getConfig());
+		try{
+			for(String player : tempData.getConfig().getKeys(false)){
+				ConfigurationSection playerCS = tempData.getConfig().getConfigurationSection(player);
+				for(String universeName : playerCS.getKeys(false)) {
+					ConfigurationSection universeCS = playerCS.getConfigurationSection(universeName);
+					for(String statName : universeCS.getKeys(false)){
+						if(db != null){
+								db.addStat(player, universeName, statName, universeCS.getInt(statName) + "");
+						}
+						else{
+							int updateValue = universeCS.getInt(statName);
+							Integer oldValue = statsData.getConfig().getInt(player + "." + universeName +
+									"." + statName);
+							updateValue = (oldValue == null) ? updateValue : (updateValue + oldValue);
+							statsData.getConfig().set(player + "." + universeName + "." + statName,
+									updateValue);
+						}
+					}
+				}
+			 }
+			// Add in config removal here
+		} catch(Exception e){StatsTracker.log.info("[StatsTracker] Something went wrong when saving temp data. Keeping temp.");}
+	}
 }

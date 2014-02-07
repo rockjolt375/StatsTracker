@@ -190,6 +190,15 @@ public class DatabaseUtility {
 		close();
 	}
 	
+	public void addToRow(String table, String idColumn, String idValue, String columnToChange, String newValue)
+			throws SQLException{
+		connect();
+		PreparedStatement queryStatement = conn.prepareStatement("UPDATE " + table + " SET " + columnToChange + "=" +
+				columnToChange + newValue + " WHERE " + idColumn + "=" + idValue);
+		queryStatement.executeQuery();
+		close();
+	}
+	
 	/**
 	 * Removes row from the database
 	 * <p>
