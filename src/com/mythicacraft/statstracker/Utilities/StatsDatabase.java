@@ -50,8 +50,9 @@ public class StatsDatabase extends DatabaseUtility{
 		super.addToRow("stats_" + universe, "player", "'" + player + "'", stat, value);	
 	}
 	
-	public HashMap<String, Integer> getStatistics(Player player) throws SQLException{
-		ResultSet results = super.getRows("stats_" + getUniverse(player.getWorld().toString()), "player = '" +
+	public HashMap<String, Integer> getStatistics(Player player, String universe) throws SQLException{
+		connect();
+		ResultSet results = super.getRows("stats_" + universe, "player = '" +
 				player.getName().toString() + "'");
 		HashMap<String, Integer> stats = new HashMap<String, Integer>(64);
 		if(!results.next())
@@ -62,6 +63,7 @@ public class StatsDatabase extends DatabaseUtility{
 				stats.put(resultData.getColumnName(i), results.getInt(i));
 			}
 		}
+		close();
 		return stats;
 	}
 	

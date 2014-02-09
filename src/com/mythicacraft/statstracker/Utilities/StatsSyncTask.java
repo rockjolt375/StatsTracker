@@ -1,7 +1,6 @@
 package com.mythicacraft.statstracker.Utilities;
 
-import java.io.File;
-import java.sql.SQLException;
+import java.io.*;
 import java.util.List;
 import java.util.Queue;
 
@@ -24,9 +23,7 @@ public class StatsSyncTask extends BukkitRunnable{
 	}
 	@Override
 	public void run() {
-		try {
 			saveTempQueue();
-		} catch (SQLException e1) {StatsTracker.log.info("[StatsTracker] Uploading tmep queue failed!");}
 		if(plugin.sqlEnabled){
 			StatsDatabase db = new StatsDatabase(plugin.getConfig());
 			try{
@@ -114,7 +111,10 @@ public class StatsSyncTask extends BukkitRunnable{
 					}
 				}
 			 }
-			// Add in config removal here
+			@SuppressWarnings("resource")
+			OutputStream out = new FileOutputStream(temp);
+			out.write((new String()).getBytes());
+			tempData.saveConfig();
 		} catch(Exception e){StatsTracker.log.info("[StatsTracker] Something went wrong when saving temp data. Keeping temp.");}
 	}
 }
